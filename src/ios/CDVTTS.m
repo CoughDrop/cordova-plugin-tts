@@ -42,6 +42,7 @@
     NSString* text = [options objectForKey:@"text"];
     NSString* locale = [options objectForKey:@"locale"];
     double rate = [[options objectForKey:@"rate"] doubleValue];
+    NSString* target = [options objectForKey:@"target"];
     NSString* category = [options objectForKey:@"category"];
     
     [[AVAudioSession sharedInstance] setActive:NO withOptions:0 error:nil];
@@ -52,6 +53,15 @@
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
                                          withOptions:AVAudioSessionCategoryOptionDuckOthers error:nil];
     }
+    if (@available(iOS 13.0, *)) {
+        // iOS 13 feature that allows sending TTS content through the active call
+        if ([target isEqualToString:@"call"]) {
+            synthesizer.mixToTelephonyUplink = true;
+        } else {
+            synthesizer.mixToTelephonyUplink = false;
+        }
+    }
+
 
     if (callbackId) {
         lastCallbackId = callbackId;
